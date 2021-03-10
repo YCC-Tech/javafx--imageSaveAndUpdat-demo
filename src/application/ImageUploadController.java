@@ -1,12 +1,9 @@
 package application;
 
-import java.awt.Desktop;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.sql.SQLException;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.sql.SQLException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -20,55 +17,52 @@ import javafx.stage.FileChooser.ExtensionFilter;
 public class ImageUploadController {
 
     @FXML
-    private Button btnBrowse;
+    private Button btnBrowse;//to browse file 
+    @FXML
+    private Button btnSave;//to save new student data
+    @FXML
+    private Button btnDtail;//to get student with given studentId
+    @FXML
+    private Button btnUpdate;//to update the student info(in this case, user image)
+
     
     @FXML
-    private ImageView ivImage;
+    private ImageView ivImage;//to show user image
     
     @FXML
-    private Button btnSave;
+    private TextArea taImagePath;  //just testing image path
     
-    @FXML
-    private Button btnDtail;
-    
-    @FXML
-    private Label lblImagePath;
-    
-    @FXML
-    private TextArea taImagePath;   
-    
-    private Image userImage;    
-    private ImageUtil imageUtil = new ImageUtil();
+    private ImageUtil imageUtil = new ImageUtil();//utility object
    
-    File imageFile;
+    File imageFile;//to accept chosen image file 
+    
+    private Image userImage;   //to accept image of chosen image file 
     
     private Student student ;
     
-    private Integer updateStudentId =1;
+    private Integer updateStudentId =4;//this is your studentId to be updated(this may be get after clicking 'detail' link)
     
    
 
     @FXML
     void processBrowse(ActionEvent event) {
     	
+    	//choose a file of image
     	FileChooser fileChooser = new FileChooser();
     	fileChooser.getExtensionFilters().add(new ExtensionFilter("Images", "*.jpg","*.jpeg","*.png","*.ico"));
     	this.imageFile = fileChooser.showOpenDialog(null);
     	if(imageFile!=null) {
 
+    		//setting image file path to textarea
     	taImagePath.setText(this.imageFile.getAbsolutePath());
 
     	userImage = new Image(this.imageFile.toURI().toString());
     	
     	ivImage.setImage(userImage);
-    	
-    	
-    	
-    	
-    	}
-	
+   }
     }
-
+    
+       /* save student information to db (in this case , use image)*/
     @FXML
     void processSave(ActionEvent event) throws FileNotFoundException, SQLException {
     	student = new Student(this.imageFile);
@@ -78,7 +72,7 @@ public class ImageUploadController {
     
     
     
-    
+    /* update student information to db (in this case , use image)*/
     @FXML
     void processUpdate(ActionEvent event) throws FileNotFoundException, SQLException {
     	
@@ -87,20 +81,14 @@ public class ImageUploadController {
     
     }
     
+    
+    /*get information of specified student*/
     @FXML
     void processDetail(ActionEvent event) throws FileNotFoundException, SQLException {
-    	
-    	//first call to util method
-    	//insert into image view is here
-    	
     	student = imageUtil.getStudent(updateStudentId);
     	
     	ivImage.setImage(student.getUserImage());
-    	
-    	
-    	
-    	
-
+   
     }
 
 }

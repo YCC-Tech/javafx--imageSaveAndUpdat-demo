@@ -8,17 +8,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.Connection;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
 import database.DBConnection;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 
 public class ImageUtil {
@@ -30,9 +24,10 @@ public class ImageUtil {
 	
 	
 	public int insertStudent(Student student) throws SQLException, FileNotFoundException {
+		
 		connection = DBConnection.getConnection();
 		var rowUpdated = 0;
-		pStmt = connection.prepareStatement("INSERT INTO `students` (`imageName`) VALUES (?);");		
+		pStmt = connection.prepareStatement("INSERT INTO `students` (`photo_url`) VALUES (?);");		
 		fis = new FileInputStream(student.getImageFile());
 		pStmt.setBinaryStream(1, (InputStream)fis, (int)student.getImageFile().length());	
 		rowUpdated =pStmt.executeUpdate();
@@ -40,14 +35,12 @@ public class ImageUtil {
 	}
 	
 	
-	
-	
 	public int updateStudent(Student student) throws SQLException, FileNotFoundException {
 		connection = DBConnection.getConnection();
 		var rowUpdated = 0;
 		pStmt = connection.prepareStatement("UPDATE `students` SET "
 
-				+ "`imageName` = ? " + "WHERE (`studentId` = ?);");
+				+ "`photo_url` = ? " + "WHERE (`studentId` = ?);");
 
 		fis = new FileInputStream(student.getImageFile());
 		pStmt.setBinaryStream(1, (InputStream) fis, (int) student.getImageFile().length());
@@ -56,6 +49,7 @@ public class ImageUtil {
 		return rowUpdated;
 	}
 
+	//get Specified student with id (get from page of showing all student)
 	public Student getStudent(Integer studentId) throws SQLException, FileNotFoundException{
 		
 		Student student ;
@@ -64,10 +58,8 @@ public class ImageUtil {
 		rs = stmt.executeQuery("select * from students where studentId='"+studentId+"';");
 		
 		while(rs.next()) {	
-				
-				//student = new Student(rs.getBinaryStream("imageName"));
 			
-			InputStream is = rs.getBinaryStream("imageName");
+			InputStream is = rs.getBinaryStream("photo_url");
 			OutputStream os = new FileOutputStream(new File("photo.jpg"));
 			byte[] content = new byte[1024];
 			int size = 0;
@@ -77,7 +69,6 @@ public class ImageUtil {
 					
 				}
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
@@ -85,11 +76,8 @@ public class ImageUtil {
 				os.close();
 				is.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-	
 		}
 		Image image = new Image("file:photo.jpg");
 		student= new Student(image);
